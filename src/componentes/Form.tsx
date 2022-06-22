@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import { Sub } from '../types';
 //interfaz para que se reciba un estado tipado
 interface FormState {
@@ -12,36 +12,72 @@ interface FormProps {
 //quiere decir que form recibira una funcion como propiedad del componente padre
 //cada que se mande el handleSubmit se ejecutara la funcion que le llegara en las props
 
-//IDEA el onNEWSUb es setSubs y ea funcion ya tre el estado de subs, el cual se le agregara el inputValues
-//REVIEW osea el setSUBS ya trae incluido el estado
+const INITIAL_STATE = {
+  nick: '',
+  subMonths: 0,
+  avatar: '',
+  description: '',
+};
+
+//esto se hace para darle un tipo al parametro de action , lo que ocasiona que se le tenga que dar a type
+// aqui quiere decir que la accion puede ser de tipo change value o de tipo clear sin payload
+type FormReducerAction =
+  | {
+      type: 'change_value';
+      payload: {
+        inputName: string;
+        inputValue: string;
+      };
+    }
+  | {
+      type: 'clear';
+    };
+
+//NOTE un reducer recibe dos parametros el estado y la accion
+const formReducer = (
+  state: FormState['inputValues'],
+  action: FormReducerAction
+) => {
+  switch (action.type) {
+    case 'change_value':
+      const { inputName, inputValue } = action.payload;
+      return {
+        ...state,
+        [inputName]: inputValue,
+      };
+    case 'clear':
+      return INITIAL_STATE;
+  }
+};
+
 const Form = ({ onNewSub }: FormProps) => {
-  const [inputValues, setInputValues] = useState<FormState['inputValues']>({
-    nick: '',
-    subMonths: 0,
-    avatar: '',
-    description: '',
-  });
-
+  const [inputValues, dispatch] = useReducer(formReducer, INITIAL_STATE);
   const { nick, subMonths, avatar, description } = inputValues;
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //NOTE subs es el estado que ya traes, aqui le agregas el input values a subs
     onNewSub(inputValues);
+    handleClear();
   };
 
-  //cual es el tipo de un evento?
-  //se saca del hover del contexto de una funcion de evento
-  //Recordemos esto es para que los inputs values registren el estado
   const handleChange = (
-    //REVIEW como hay un text area en los inputs se pone el  | or para el HTMLTextArea Element
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    //NOTE evento cambiante en un formulario
-    //Quiere decir que es un valor dinamico el del name del objeto  y que ese valor tendra el del value
-    setInputValues({
-      ...inputValues,
-      [e.target.name]: e.target.value,
+    const { name, value } = e.target;
+    dispatch({
+      type: 'change_value',
+      payload: {
+        inputName: name,
+        inputValue: value,
+      },
+    });
+  };
+
+  //uso de useReducer
+
+  const handleClear = () => {
+    dispatch({
+      type: 'clear',
     });
   };
 
@@ -76,7 +112,10 @@ const Form = ({ onNewSub }: FormProps) => {
           name="description"
           placeholder="description"
         />
-        <button>Save new sub!</button>
+        <button onClick={handleClear} type="button">
+          Clear the form
+        </button>
+        <button type="submit">Save new sub!</button>
       </form>
     </div>
   );
