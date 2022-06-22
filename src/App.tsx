@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import List from './componentes/List';
 import './App.css';
 import Form from './componentes/Form';
@@ -42,18 +42,19 @@ function App() {
   const [newSubsNumber, setNewSubsNumber] =
     useState<AppState['newSubsNumber']>(0);
 
+  const divRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     //NOTe aqui esto te deja porque el initial state tiene el contrato de interfaz que se necesita
     //Si por ejemplo otro le quita el nick ya no compila porque la interface le esta diciendo que faltan tipos y propiedades
     setSubs(initial_state);
   }, []);
-
   const handleNewSub = (newSub: Sub): void => {
     setSubs((subs) => [...subs, newSub]);
   };
 
   return (
-    <div className="App">
+    <div className="App" ref={divRef}>
       <h1>midu subs</h1>
       {/*aqui detecta que debe recibir una propiedad de subs*/}
       <List subs={subs}>
