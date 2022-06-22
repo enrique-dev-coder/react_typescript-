@@ -1,57 +1,15 @@
-import React, { useReducer, useState } from 'react';
 import { Sub } from '../types';
-//interfaz para que se reciba un estado tipado
-interface FormState {
-  inputValues: Sub;
-}
 
-//Interface para las propiedades del componente
+import UseNewSubForm from '../hooks/useNewSubForm';
+
 interface FormProps {
   onNewSub: (newSub: Sub) => void;
 }
 //quiere decir que form recibira una funcion como propiedad del componente padre
 //cada que se mande el handleSubmit se ejecutara la funcion que le llegara en las props
 
-const INITIAL_STATE = {
-  nick: '',
-  subMonths: 0,
-  avatar: '',
-  description: '',
-};
-
-//esto se hace para darle un tipo al parametro de action , lo que ocasiona que se le tenga que dar a type
-// aqui quiere decir que la accion puede ser de tipo change value o de tipo clear sin payload
-type FormReducerAction =
-  | {
-      type: 'change_value';
-      payload: {
-        inputName: string;
-        inputValue: string;
-      };
-    }
-  | {
-      type: 'clear';
-    };
-
-//NOTE un reducer recibe dos parametros el estado y la accion
-const formReducer = (
-  state: FormState['inputValues'],
-  action: FormReducerAction
-) => {
-  switch (action.type) {
-    case 'change_value':
-      const { inputName, inputValue } = action.payload;
-      return {
-        ...state,
-        [inputName]: inputValue,
-      };
-    case 'clear':
-      return INITIAL_STATE;
-  }
-};
-
 const Form = ({ onNewSub }: FormProps) => {
-  const [inputValues, dispatch] = useReducer(formReducer, INITIAL_STATE);
+  const [inputValues, dispatch] = UseNewSubForm();
   const { nick, subMonths, avatar, description } = inputValues;
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
