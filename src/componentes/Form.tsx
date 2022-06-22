@@ -7,7 +7,7 @@ interface FormState {
 
 //Interface para las propiedades del componente
 interface FormProps {
-  onNewSub: React.Dispatch<React.SetStateAction<Sub[]>>;
+  onNewSub: (newSub: Sub) => void;
 }
 //quiere decir que form recibira una funcion como propiedad del componente padre
 //cada que se mande el handleSubmit se ejecutara la funcion que le llegara en las props
@@ -27,7 +27,7 @@ const Form = ({ onNewSub }: FormProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //NOTE subs es el estado que ya traes, aqui le agregas el input values a subs
-    onNewSub((subs) => [...subs, inputValues]);
+    onNewSub(inputValues);
   };
 
   //cual es el tipo de un evento?

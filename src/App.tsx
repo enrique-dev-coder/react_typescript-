@@ -48,6 +48,10 @@ function App() {
     setSubs(initial_state);
   }, []);
 
+  const handleNewSub = (newSub: Sub): void => {
+    setSubs((subs) => [...subs, newSub]);
+  };
+
   return (
     <div className="App">
       <h1>midu subs</h1>
@@ -60,7 +64,7 @@ function App() {
       <Form
         //el tipo Dispatch<SetStateAction<Sub[]>> es el tipo de esa funcion de react
         //osea esas funciones curiosas que apuntna a otra
-        onNewSub={setSubs}
+        onNewSub={handleNewSub}
       />
     </div>
   );
